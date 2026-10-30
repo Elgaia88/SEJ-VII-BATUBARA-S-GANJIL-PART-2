@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Interaktif Sejarah Hindu-Buddha</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top left, #1e1b4b, #0f172a 60%, #030712);
+      min-height: 100vh;
+      color: #f8fafc;
+    }
+    
+    .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .pulse-urgent {
+      animation: pulse-red 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        transform: scale(1.04);
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-between min-h-screen p-4 sm:p-6 lg:p-8">
+
+  <!-- Header Global -->
+  <header class="w-full max-w-4xl mx-auto flex items-center justify-between pb-4 border-b border-slate-700/60 mb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-500 flex items-center justify-center font-black text-xl text-white shadow-md">
+        ☸
+      </div>
+      <div>
+        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">Kuis Sejarah Hindu-Buddha</h1>
+        <p class="text-xs text-slate-400">Uji Pemahaman Peradaban Kuno Indonesia</p>
+      </div>
+    </div>
+    <div id="playerBadge" class="hidden text-xs sm:text-sm font-semibold bg-indigo-900/60 border border-indigo-500/40 px-3.5 py-1.5 rounded-full text-indigo-200">
+      👤 <span id="displayPlayerName">-</span>
+    </div>
+  </header>
+
+  <!-- Kontainer Utama -->
+  <main class="w-full max-w-3xl mx-auto flex-1 flex flex-col justify-center">
+
+    <!-- 1. Screen Registrasi / Start -->
+    <div id="startScreen" class="glass-card rounded-3xl p-6 sm:p-10 text-center transition-all duration-300">
+      <div class="inline-flex p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 mb-4 border border-indigo-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+      
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Persiapan Kuis Sejarah</h2>
+      <p class="text-sm sm:text-base text-slate-300 mb-8 max-w-md mx-auto">
+        Kuis berisi <strong class="text-amber-400">25 soal</strong> materi masuknya Hindu-Buddha ke Nusantara. Soal & pilihan teracak otomatis setiap sesi.
+      </p>
+
+      <form id="startForm" class="space-y-6 text-left max-w-md mx-auto" onsubmit="event.preventDefault(); startQuiz();">
+        <div>
+          <label for="playerName" class="block text-sm font-medium text-slate-200 mb-2">Nama Lengkap Peserta</label>
+          <input 
+            type="text" 
+            id="playerName" 
+            required
+            placeholder="Ketik nama Anda di sini..." 
+            class="w-full px-4 py-3.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+          >
+          <p id="nameError" class="text-red-400 text-xs mt-1.5 hidden">Harap masukkan nama sebelum memulai!</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-200 mb-2">Pilih Durasi Waktu Per Soal</label>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="cursor-pointer">
+              <input type="radio" name="timeOption" value="15" class="peer sr-only" checked>
+              <div class="p-4 rounded-xl border-2 border-slate-700 bg-slate-800/60 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/20 text-center transition-all hover:bg-slate-800">
+                <span class="block text-xl font-bold text-white">⏱ 15 Detik</span>
+                <span class="text-xs text-slate-400">Tantangan Cepat</span>
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="timeOption" value="30" class="peer sr-only">
+              <div class="p-4 rounded-xl border-2 border-slate-700 bg-slate-800/60 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/20 text-center transition-all hover:bg-slate-800">
+                <span class="block text-xl font-bold text-white">⏱ 30 Detik</span>
+                <span class="text-xs text-slate-400">Waktu Lebih Santai</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-4 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-600/30 transform active:scale-[0.99] transition-all text-base tracking-wide flex items-center justify-center gap-2"
+        >
+          <span>Mulai Kuis Sekarang</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- 2. Screen Kuis Aktif -->
+    <div id="quizScreen" class="hidden space-y-4">
+      
+      <!-- Status Bar: Progress, Skor & Timer -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Progres Soal</span>
+          <span class="text-base sm:text-lg font-bold text-indigo-300">
+            <span id="currentQuestionNum">1</span> / <span id="totalQuestionNum">25</span>
+          </span>
+        </div>
+
+        <!-- Timer Circle/Badge -->
+        <div id="timerContainer" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 font-mono transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="timerText" class="text-xl sm:text-2xl font-black text-white">00</span>
+          <span class="text-xs text-slate-400">detik</span>
+        </div>
+
+        <div class="text-right">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Skor Sementara</span>
+          <span id="liveScore" class="text-base sm:text-lg font-bold text-emerald-400">0</span>
+        </div>
+      </div>
+
+      <!-- Bar Durasi Visual -->
+      <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700/50">
+        <div id="timerProgressBar" class="bg-indigo-500 h-full transition-all duration-1000 ease-linear w-full"></div>
+      </div>
+
+      <!-- Box Pertanyaan & Pilihan Jawaban -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+        <div>
+          <span class="inline-block px-3 py-1 bg-indigo-950/80 border border-indigo-600/40 text-indigo-300 text-xs font-medium rounded-lg mb-3">
+            Pertanyaan <span id="questionTagNumber">1</span>
+          </span>
+          <h3 id="questionText" class="text-lg sm:text-xl md:text-2xl font-bold text-white leading-relaxed">
+            <!-- Teks Pertanyaan Diisi via JS -->
+          </h3>
+        </div>
+
+        <!-- Pilihan Jawaban (Font & background kontras tinggi) -->
+        <div id="answersGrid" class="grid grid-cols-1 gap-3.5">
+          <!-- Opsi dibuat dinamis -->
+        </div>
+
+        <!-- Notifikasi Status Jawaban Waktu Habis / Umpan Balik -->
+        <div id="feedbackBox" class="hidden p-4 rounded-xl text-sm font-semibold flex items-center justify-between gap-2">
+          <span id="feedbackText"></span>
+          <button 
+            id="nextBtn" 
+            onclick="handleNextQuestion()" 
+            class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+          >
+            <span>Lanjut</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. Screen Hasil & Review Lengkap -->
+    <div id="resultScreen" class="hidden space-y-8 pb-12">
+      <!-- Kartu Hasil Utama -->
+      <div class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden border-indigo-500/30">
+        <div class="absolute -top-12 -right-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-widest mb-3">
+          Hasil Kuis Selesai
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Kuis Sejarah Kebudayaan Hindu-Buddha</h2>
+        <p class="text-slate-300 mt-1 text-sm sm:text-base">
+          Peserta: <strong id="resultPlayerName" class="text-amber-400">Nama</strong>
+        </p>
+
+        <!-- Lingkaran / Indikator Nilai -->
+        <div class="my-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+          <div class="relative flex items-center justify-center w-36 h-36 rounded-full border-4 border-indigo-500 bg-slate-900/80 shadow-2xl">
+            <div class="text-center">
+              <span id="finalScoreVal" class="text-4xl font-black text-white block">0</span>
+              <span class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Skor Akhir</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-left w-full max-w-xs">
+            <div class="p-3.5 rounded-xl bg-slate-900/70 border border-emerald-500/30">
+              <span class="block text-xs text-slate-400">Jawaban Benar</span>
+              <span id="correctCount" class="text-xl font-bold text-emerald-400">0</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/70 border border-rose-500/30">
+              <span class="block text-xs text-slate-400">Jawaban Salah / Lewat</span>
+              <span id="wrongCount" class="text-xl font-bold text-rose-400">0</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/70 border border-slate-700 col-span-2">
+              <span class="block text-xs text-slate-400">Total Soal Dijawab</span>
+              <span id="totalAnswered" class="text-lg font-bold text-slate-200">25 Soal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <button 
+            onclick="restartQuiz()" 
+            class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 active:scale-95 text-sm sm:text-base"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Ulangi Kuis (Acak Baru)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bagian Review Jawaban Lengkap -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-700/70 pb-4">
+          <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>📋</span> Review Jawaban Detail
+          </h3>
+          <span class="text-xs text-slate-400">25 Pertanyaan & Analisis Kunci</span>
+        </div>
+
+        <div id="reviewList" class="space-y-4">
+          <!-- Item Review dirender via JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full text-center py-4 text-xs text-slate-500">
+    Aplikasi Kuis Interaktif Sejarah &copy; Mandiri &amp; Responsif
+  </footer>
+
+  <script>
+    // -------------------------------------------------------------
+    // DATA PERTANYAAN RESMI LENGKAP DARI DOKUMEN (25 SOAL)
+    // -------------------------------------------------------------
+    const rawQuestionsData = [
+      {
+        id: 1,
+        question: "Untuk mencegah percampuran budaya (menjaga Kemurnian darah Arya) Bangsa Arya membentuk..",
+        options: ["Kasta.", "Budaya.", "Pemerintah.", "Kesultanan."],
+        answer: "Kasta."
+      },
+      {
+        id: 2,
+        question: "Dewa Wisnu dalam agama Hindu adalah dewa....",
+        options: ["Pencipta.", "Perusak.", "Pelindung.", "Kesuburan."],
+        answer: "Pelindung."
+      },
+      {
+        id: 3,
+        question: "Pembagian masyarakat berdasarkan golongan dalam agama hindu disebut..",
+        options: ["Kasta.", "Trimurti.", "Upanishad.", "Strata."],
+        answer: "Kasta."
+      },
+      {
+        id: 4,
+        question: "Tiga Dewa Utama dalam agama Hindu disebut ...",
+        options: ["Trimurti.", "Kasta.", "Trisakti.", "Politeisme."],
+        answer: "Trimurti."
+      },
+      {
+        id: 5,
+        question: "Budaya Hindu lahir dari percampuran tiga budaya kecuali...",
+        options: ["Dravida.", "Munda.", "Shik.", "Arya."],
+        answer: "Shik."
+      },
+      {
+        id: 6,
+        question: "Kepercayaan terhadap banyak Dewa yang dibentuk Bangsa Arya disebut..",
+        options: ["Politeisme.", "Monoteisme.", "Ateisme.", "Sinkritisme."],
+        answer: "Politeisme."
+      },
+      {
+        id: 7,
+        question: "Agama Buddha pertama sekali diajarkan oleh...",
+        options: ["Sidharta Gautama.", "Sudhhodhana.", "Ratu Maha Maya.", "Asokha."],
+        answer: "Sidharta Gautama."
+      },
+      {
+        id: 8,
+        question: "Kitab Pitaka agama Buddha yang berisi aturan hidup adalah...",
+        options: ["Vinaya Pitaka.", "Sutta Pitaka.", "Abdidharma Pitaka.", "Astivadha Pitaka."],
+        answer: "Vinaya Pitaka."
+      },
+      {
+        id: 9,
+        question: "Agar lepas dari Samsara manusia harus menjalankan 8 kebenaran yang disebut...",
+        options: ["Vinaya Pitaka.", "Sutta Pitaka.", "Abdidharma Pitaka.", "Astivadha Pitaka."],
+        answer: "Astivadha Pitaka."
+      },
+      {
+        id: 10,
+        question: "Agama Buddha lahir dan berkembang di daerah...",
+        options: ["Bombay.", "New Delhi.", "Kapitalawastu.", "Pakistan."],
+        answer: "Kapitalawastu."
+      },
+      {
+        id: 11,
+        question: "Yang tidak termasuk factor pendorong masuknya hindu buddha ke Indonesia Adalah...",
+        options: [
+          "Indonesia kaya akan rempah rempah.",
+          "Letak Indonesia dijalur perdagangan kuno.",
+          "Indonesia memiliki pergantian angin muson yang teratur.",
+          "Jumlah penduduk Indonesia yang besar."
+        ],
+        answer: "Jumlah penduduk Indonesia yang besar."
+      },
+      {
+        id: 12,
+        question: "Posisi silang Indonesia terletak diantara dua benua dan dua....",
+        options: ["Pulau.", "Samudera.", "Negara.", "Negara Adi daya."],
+        answer: "Samudera."
+      },
+      {
+        id: 13,
+        question: "Jalur perdagangan kuno antara India dan cina melalui jalur darat disebut juga sebagai jalur..",
+        options: ["Emas.", "Rempah rempah.", "Sutra.", "Utama."],
+        answer: "Sutra."
+      },
+      {
+        id: 14,
+        question: "Para pedagang kuno India dan dan Cina harus singgah di Indonesia untuk...",
+        options: [
+          "Menunggu Pergantian angin musim.",
+          "Menyebarkan agama.",
+          "Bertransakasi dagang.",
+          "Menguasai rempah rempah."
+        ],
+        answer: "Menunggu Pergantian angin musim."
+      },
+      {
+        id: 15,
+        question: "Alat transportasi yang dipergunakan para pedagang melalui jalur sutra Adalah....",
+        options: ["Perahu.", "Kuda dan Unta.", "Kapal Motor.", "Perahu bercadik."],
+        answer: "Kuda dan Unta."
+      },
+      {
+        id: 16,
+        question: "Teori masuknya Hindu Buddha ke Indonesia teori Brahman ditulis/didukung oleh...",
+        options: ["F.D.K. Bosch.", "N.J. Kroom.", "J.C Vanleur.", "Vanden Bosch."],
+        answer: "J.C Vanleur."
+      },
+      {
+        id: 17,
+        question: "Menurut teori bahmana yang berperan membawa masuk Hindu Buddha ke Indonesia Adalah...",
+        options: ["Golongan Pedagang.", "Golongan Brahmana.", "Golongan Ksatrya.", "Golongan Sudra."],
+        answer: "Golongan Brahmana."
+      },
+      {
+        id: 18,
+        question: "Landasan teori Waisya bahwa yang membawa masuk Hindu Buddha ke Indonesia Adalah...",
+        options: [
+          "Indonesia kaya akan rempah rempah.",
+          "Pergantian musim yang teratur di Indonesia.",
+          "Jumlah penduduk Indonesia yang besar.",
+          "Indonesia ang subur."
+        ],
+        answer: "Indonesia kaya akan rempah rempah."
+      },
+      {
+        id: 19,
+        question: "Teori Waisya ditulis/ didukung oleh...",
+        options: ["F.D.K. Bosch.", "N.J. Kroom.", "J.C Vanleur.", "Vanden Bosch."],
+        answer: "N.J. Kroom."
+      },
+      {
+        id: 20,
+        question: "Teori yang menyatakan bahwa Hindu Buddha masuk ke Indonesia karena peran aktif orang Indonesia sendiri adalah teori...",
+        options: ["Arus Balik.", "Sudra.", "Waisya.", "Brahman."],
+        answer: "Arus Balik."
+      },
+      {
+        id: 21,
+        question: "Berdirinya Kerajaan kutai di kalimantan timur merupakan pengaruh hindu buddha di Indonesia di bidang...",
+        options: ["Arsitektur.", "Filsafat.", "Seni.", "Politik."],
+        answer: "Politik."
+      },
+      {
+        id: 22,
+        question: "Yang tidak termasuk raja-raja yang pernah memerintah di Kerajaan kutai Adalah...",
+        options: ["Kudungga.", "Mulawarman.", "Purnawarman.", "Aswawarman."],
+        answer: "Purnawarman."
+      },
+      {
+        id: 23,
+        question: "Raja kutai Aswawarman disebut juga sebagai Wangsakarta yang artinya...",
+        options: ["Pendiri Kerajaan.", "Pembentuk keluarga.", "Pembentuk Kerajaan.", "Penasehat Kerajaan."],
+        answer: "Pembentuk keluarga."
+      },
+      {
+        id: 24,
+        question: "Tugu batu peringatan upacara kurban peninggalan kutai disebut...",
+        options: ["Yupa.", "Wamsakarta.", "Prasasti.", "Waprakeswara."],
+        answer: "Yupa."
+      },
+      {
+        id: 25,
+        question: "Kerajaan kutai mencapai puncak kejayaan pada masa pemerintahan ...",
+        options: ["Kudungga.", "Aswawarman.", "Mulawarman.", "Purnawarman."],
+        answer: "Mulawarman."
+      }
+    ];
+
+    // Status State Aplikasi
+    let playerName = "";
+    let timePerQuestion = 15;
+    let randomizedQuestions = [];
+    let currentQuestionIndex = 0;
+    let timerInterval = null;
+    let timeLeft = 0;
+    let userAnswers = []; // Format simpan: { question, options, correctAnswer, chosenAnswer, isCorrect }
+    let hasAnsweredCurrent = false;
+
+    // Utilitas Pengacakan (Fisher-Yates)
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Normalisasi string untuk pencocokan tepat
+    function cleanText(txt) {
+      if (!txt) return "";
+      return txt.replace(/[.\s]+$/, "").trim().toLowerCase();
+    }
+
+    // Memulai Kuis
+    function startQuiz() {
+      const nameInput = document.getElementById("playerName").value.trim();
+      if (!nameInput) {
+        document.getElementById("nameError").classList.remove("hidden");
+        return;
+      }
+      document.getElementById("nameError").classList.add("hidden");
+      playerName = nameInput;
+
+      // Ambil opsi waktu
+      const selectedTime = document.querySelector('input[name="timeOption"]:checked').value;
+      timePerQuestion = parseInt(selectedTime, 10);
+
+      // Siapkan soal yang diacak beserta urutan opsinya
+      randomizedQuestions = shuffleArray(rawQuestionsData).map(q => {
+        return {
+          id: q.id,
+          question: q.question,
+          options: shuffleArray(q.options),
+          answer: q.answer
+        };
+      });
+
+      // Reset data
+      currentQuestionIndex = 0;
+      userAnswers = [];
+      
+      // Update badge identitas
+      document.getElementById("displayPlayerName").textContent = playerName;
+      document.getElementById("playerBadge").classList.remove("hidden");
+
+      // Tampilan
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("resultScreen").classList.add("hidden");
+      document.getElementById("quizScreen").classList.remove("hidden");
+
+      document.getElementById("totalQuestionNum").textContent = randomizedQuestions.length;
+      document.getElementById("liveScore").textContent = "0";
+
+      loadQuestion(currentQuestionIndex);
+    }
+
+    // Menampilkan Soal Aktif
+    function loadQuestion(index) {
+      clearInterval(timerInterval);
+      hasAnsweredCurrent = false;
+
+      const qData = randomizedQuestions[index];
+      
+      // Update teks & tag angka
+      document.getElementById("currentQuestionNum").textContent = index + 1;
+      document.getElementById("questionTagNumber").textContent = index + 1;
+      document.getElementById("questionText").textContent = qData.question;
+      
+      // Sembunyikan notifikasi feedback
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.classList.add("hidden");
+      feedbackBox.className = "hidden p-4 rounded-xl text-sm font-semibold flex items-center justify-between gap-2";
+
+      // Render Pilihan Jawaban
+      const answersGrid = document.getElementById("answersGrid");
+      answersGrid.innerHTML = "";
+
+      const optionPrefix = ["A", "B", "C", "D"];
+
+      qData.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("data-option", opt);
+        btn.className = "quiz-opt group w-full text-left p-4 rounded-2xl bg-slate-800/90 hover:bg-slate-700/80 border border-slate-700 text-slate-100 font-medium transition-all duration-200 flex items-center gap-3.5 shadow-sm active:scale-[0.99] focus:outline-none";
+
+        btn.innerHTML = `
+          <span class="opt-prefix inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900 border border-slate-700 font-bold text-xs text-indigo-300 group-hover:border-indigo-500 transition-colors shrink-0">
+            ${optionPrefix[i] || "•"}
+          </span>
+          <span class="opt-text text-sm sm:text-base font-medium flex-1">${opt}</span>
+          <span class="opt-icon ml-2 hidden"></span>
+        `;
+
+        btn.onclick = () => selectAnswer(opt, btn);
+        answersGrid.appendChild(btn);
+      });
+
+      // Mulai Countdown Timer
+      startTimer();
+    }
+
+    // Mekanisme Timer Per Soal
+    function startTimer() {
+      timeLeft = timePerQuestion;
+      const timerText = document.getElementById("timerText");
+      const timerContainer = document.getElementById("timerContainer");
+      const progressBar = document.getElementById("timerProgressBar");
+
+      timerText.textContent = timeLeft.toString().padStart(2, '0');
+      timerContainer.classList.remove("pulse-urgent", "border-rose-500", "bg-rose-950/40");
+      timerText.classList.remove("text-rose-400");
+      timerText.classList.add("text-white");
+      progressBar.style.width = "100%";
+      progressBar.classList.remove("bg-rose-500");
+      progressBar.classList.add("bg-indigo-500");
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerText.textContent = timeLeft.toString().padStart(2, '0');
+
+        // Persentase progress bar
+        const pct = (timeLeft / timePerQuestion) * 100;
+        progressBar.style.width = `${Math.max(0, pct)}%`;
+
+        // Peringatan saat <= 5 detik
+        if (timeLeft <= 5 && timeLeft > 0) {
+          timerContainer.classList.add("pulse-urgent", "border-rose-500", "bg-rose-950/40");
+          timerText.classList.remove("text-white");
+          timerText.classList.add("text-rose-400");
+          progressBar.classList.remove("bg-indigo-500");
+          progressBar.classList.add("bg-rose-500");
+        }
+
+        // Waktu habis
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
+    }
+
+    // Pemilihan Jawaban oleh User
+    function selectAnswer(selectedOption, clickedBtn) {
+      if (hasAnsweredCurrent) return;
+      hasAnsweredCurrent = true;
+      clearInterval(timerInterval);
+
+      const currentQ = randomizedQuestions[currentQuestionIndex];
+      const isCorrect = cleanText(selectedOption) === cleanText(currentQ.answer);
+
+      // Simpan jawaban
+      userAnswers.push({
+        question: currentQ.question,
+        options: currentQ.options,
+        correctAnswer: currentQ.answer,
+        chosenAnswer: selectedOption,
+        isCorrect: isCorrect
+      });
+
+      // Update skor langsung di header
+      const correctSoFar = userAnswers.filter(a => a.isCorrect).length;
+      document.getElementById("liveScore").textContent = Math.round((correctSoFar / randomizedQuestions.length) * 100);
+
+      // Kunci semua tombol dan beri style warna jelas
+      const allButtons = document.querySelectorAll(".quiz-opt");
+      allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove("hover:bg-slate-700/80", "active:scale-[0.99]");
+        const optVal = btn.getAttribute("data-option");
+
+        if (cleanText(optVal) === cleanText(currentQ.answer)) {
+          // HIJAU TERANG (BENAR) - Teks kontras putih cerah
+          btn.classList.add("bg-emerald-600", "text-white", "border-emerald-400", "shadow-emerald-900/50");
+          btn.classList.remove("bg-slate-800/90", "text-slate-100", "border-slate-700");
+          const iconSpan = btn.querySelector(".opt-icon");
+          iconSpan.innerHTML = "✓";
+          iconSpan.className = "opt-icon text-white font-extrabold text-base ml-2 inline";
+        }
+      });
+
+      if (!isCorrect) {
+        // MERAH (SALAH) - Teks kontras putih
+        clickedBtn.classList.add("bg-rose-600", "text-white", "border-rose-400", "shadow-rose-900/50");
+        clickedBtn.classList.remove("bg-slate-800/90", "text-slate-100", "border-slate-700");
+        const iconSpan = clickedBtn.querySelector(".opt-icon");
+        iconSpan.innerHTML = "✕";
+        iconSpan.className = "opt-icon text-white font-extrabold text-base ml-2 inline";
+      }
+
+      // Tampilkan feedback & tombol next
+      const feedbackBox = document.getElementById("feedbackBox");
+      const feedbackText = document.getElementById("feedbackText");
+
+      if (isCorrect) {
+        feedbackBox.classList.remove("hidden");
+        feedbackBox.classList.add("bg-emerald-950/70", "border", "border-emerald-500/40", "text-emerald-300");
+        feedbackText.innerHTML = `<span>🎉 Hebat! Jawaban Anda tepat.</span>`;
+      } else {
+        feedbackBox.classList.remove("hidden");
+        feedbackBox.classList.add("bg-rose-950/70", "border", "border-rose-500/40", "text-rose-300");
+        feedbackText.innerHTML = `<span>Salah! Kunci jawaban yang benar adalah: <strong class="text-white underline">${currentQ.answer}</strong></span>`;
+      }
+    }
+
+    // Logika jika waktu habis
+    function handleTimeOut() {
+      if (hasAnsweredCurrent) return;
+      hasAnsweredCurrent = true;
+
+      const currentQ = randomizedQuestions[currentQuestionIndex];
+
+      // Simpan sebagai tidak terjawab (salah)
+      userAnswers.push({
+        question: currentQ.question,
+        options: currentQ.options,
+        correctAnswer: currentQ.answer,
+        chosenAnswer: "(Waktu Habis)",
+        isCorrect: false
+      });
+
+      // Highlight jawaban yang benar dengan warna hijau
+      const allButtons = document.querySelectorAll(".quiz-opt");
+      allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove("hover:bg-slate-700/80");
+        const optVal = btn.getAttribute("data-option");
+
+        if (cleanText(optVal) === cleanText(currentQ.answer)) {
+          btn.classList.add("bg-emerald-600", "text-white", "border-emerald-400");
+          btn.classList.remove("bg-slate-800/90", "text-slate-100", "border-slate-700");
+          const iconSpan = btn.querySelector(".opt-icon");
+          iconSpan.innerHTML = "✓ Kunci Benar";
+          iconSpan.className = "opt-icon text-white font-bold text-xs bg-emerald-700 px-2 py-0.5 rounded-md ml-auto inline";
+        }
+      });
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      const feedbackText = document.getElementById("feedbackText");
+      feedbackBox.classList.remove("hidden");
+      feedbackBox.classList.add("bg-amber-950/70", "border", "border-amber-500/40", "text-amber-300");
+      feedbackText.innerHTML = `<span>⌛ Waktu Habis! Kunci jawaban: <strong class="text-white underline">${currentQ.answer}</strong></span>`;
+    }
+
+    // Menangani Transisi Soal Berikutnya
+    function handleNextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < randomizedQuestions.length) {
+        loadQuestion(currentQuestionIndex);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // Kuis Selesai: Tampilkan Skor & Review
+    function finishQuiz() {
+      clearInterval(timerInterval);
+
+      document.getElementById("quizScreen").classList.add("hidden");
+      document.getElementById("resultScreen").classList.remove("hidden");
+
+      const total = randomizedQuestions.length;
+      const correct = userAnswers.filter(a => a.isCorrect).length;
+      const wrong = total - correct;
+      
+      // Rumus Skor: (Jumlah Benar / Total Soal) * 100
+      const score = Math.round((correct / total) * 100);
+
+      document.getElementById("resultPlayerName").textContent = playerName;
+      document.getElementById("finalScoreVal").textContent = score;
+      document.getElementById("correctCount").textContent = `${correct} Soal`;
+      document.getElementById("wrongCount").textContent = `${wrong} Soal`;
+      document.getElementById("totalAnswered").textContent = `${total} Soal`;
+
+      // Render Review Lengkap
+      const reviewList = document.getElementById("reviewList");
+      reviewList.innerHTML = "";
+
+      userAnswers.forEach((item, idx) => {
+        const isRight = item.isCorrect;
+        const reviewCard = document.createElement("div");
+        reviewCard.className = `p-4 sm:p-5 rounded-2xl border ${isRight ? 'border-emerald-500/30 bg-emerald-950/20' : 'border-rose-500/30 bg-rose-950/20'} space-y-3 transition-all`;
+
+        reviewCard.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-md ${isRight ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+              Soal #${idx + 1} • ${isRight ? 'Benar (+1)' : 'Salah (0)'}
+            </span>
+          </div>
+
+          <p class="font-semibold text-white text-sm sm:text-base">${item.question}</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm pt-2 border-t border-slate-700/60">
+            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <span class="text-slate-400 block text-[11px] mb-0.5">Jawaban Anda:</span>
+              <span class="font-bold ${isRight ? 'text-emerald-400' : 'text-rose-400'}">
+                ${item.chosenAnswer || '(Tidak dijawab)'}
+              </span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <span class="text-slate-400 block text-[11px] mb-0.5">Kunci Jawaban Benar:</span>
+              <span class="font-bold text-emerald-400">
+                ${item.correctAnswer}
+              </span>
+            </div>
+          </div>
+        `;
+
+        reviewList.appendChild(reviewCard);
+      });
+      
+      // Gulir ke atas
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Memulai Ulang Kuis
+    function restartQuiz() {
+      document.getElementById("resultScreen").classList.add("hidden");
+      document.getElementById("startScreen").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
